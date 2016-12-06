@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">MPChartSample</string>
+    <string name="chart_no_data">暂无数据</string>
+</resources>

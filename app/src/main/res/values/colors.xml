@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <!--图表-->
+    <color name="chart_bg">#fcfcfc</color>
+    <color name="transparent">#00000000</color>
+    <color name="white">#ffffff</color>
+    <color name="normal_black_color">#666666</color>
+    <color name="black_color_999999">#999999</color>
+    <color name="gray_color_cccccc">#cccccc</color>
+
+    <color name="barchart_one">#21b2ff</color>
+    <color name="barchart_two">#ff5bbf</color>
+    <color name="bar_4CFFFFFF">#4CFFFFFF</color>
+    <color name="filter">#dddddd</color>
+</resources>
