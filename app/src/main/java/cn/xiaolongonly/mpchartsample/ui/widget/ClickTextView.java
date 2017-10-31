@@ -15,6 +15,7 @@ import cn.xiaolongonly.mpchartsample.R;
  */
 
 public class ClickTextView extends TextView {
+    private boolean isTouchOutside;
 
     public ClickTextView(Context context) {
         super(context);
@@ -28,22 +29,37 @@ public class ClickTextView extends TextView {
         super(context, attrs, defStyle);
     }
 
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        switch (event.getActionMasked()) {
-            case MotionEvent.ACTION_DOWN:
-                //在按下事件中设置滤镜
-                setFilter();
-                break;
-            case MotionEvent.ACTION_UP:
-                //由于捕获了Touch事件，需要手动触发Click事件
-                performClick();
-            case MotionEvent.ACTION_CANCEL:
-                //在CANCEL和UP事件中清除滤镜
-                removeFilter();
-                break;
-            default:
-                break;
+        if (isEnabled()) {
+            switch (event.getActionMasked()) {
+                case MotionEvent.ACTION_DOWN:
+                    isTouchOutside = false;
+                    //在按下事件中设置滤镜
+                    setFilter();
+                    break;
+                case MotionEvent.ACTION_UP:
+                    //由于捕获了Touch事件，需要手动触发Click事件
+                    if (!isTouchOutside) {
+                        performClick();
+                    }
+                case MotionEvent.ACTION_CANCEL:
+                    //在CANCEL和UP事件中清除滤镜
+                    removeFilter();
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    if ((event.getX() < 0 || event.getX() > getWidth()) ||
+                            event.getY() < 0 || event.getY() > getHeight()) {
+                        if (!isTouchOutside) {
+                            isTouchOutside = true;
+                            removeFilter();
+                        }
+                    }
+                    break;
+                default:
+                    break;
+            }
         }
         return true;
     }

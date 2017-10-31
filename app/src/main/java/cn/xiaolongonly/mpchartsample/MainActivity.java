@@ -11,8 +11,10 @@ import cn.xiaolongonly.mpchartsample.ui.BarChartActivity;
 import cn.xiaolongonly.mpchartsample.ui.HorizontalBarChartActivity;
 import cn.xiaolongonly.mpchartsample.ui.LineChartActivity1;
 import cn.xiaolongonly.mpchartsample.ui.LineChartActivity2;
+import cn.xiaolongonly.mpchartsample.ui.MutiBarChartActivity;
 import cn.xiaolongonly.mpchartsample.ui.PieChartActivity;
 import cn.xiaolongonly.mpchartsample.ui.RadarChartActivty;
+import cn.xiaolongonly.mpchartsample.ui.StackBarChartActivity;
 
 public class MainActivity extends BaseTitleActivity {
     private ListView lvChartList;
@@ -22,7 +24,9 @@ public class MainActivity extends BaseTitleActivity {
             new ChartView("柱状图", BarChartActivity.class),
             new ChartView("横向柱状图", HorizontalBarChartActivity.class),
             new ChartView("饼图", PieChartActivity.class),
-            new ChartView("雷达图", RadarChartActivty.class)
+            new ChartView("雷达图", RadarChartActivty.class),
+            new ChartView("复合柱状图", MutiBarChartActivity.class),
+            new ChartView("stack", StackBarChartActivity.class)
     };
 
     @Override

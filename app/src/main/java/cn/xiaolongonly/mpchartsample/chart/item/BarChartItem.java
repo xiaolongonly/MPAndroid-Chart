@@ -16,11 +16,15 @@ import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.ChartData;
+import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.formatter.LargeValueFormatter;
+import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import cn.xiaolongonly.mpchartsample.R;
@@ -32,9 +36,11 @@ public class BarChartItem extends BaseChartItem {
     private static final String TAG = "BarChartItem";
     private String xDesc;
     private String yDesc;
+    private int type;
 
-    public BarChartItem(ChartData cd, Context c, IAxisValueFormatter iAxisValueFormatter) {
+    public BarChartItem(ChartData cd, Context c, IAxisValueFormatter iAxisValueFormatter, int type) {
         super(cd, c, iAxisValueFormatter);
+        this.type = type;
     }
 
     public String getxDesc() {
@@ -82,12 +88,18 @@ public class BarChartItem extends BaseChartItem {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        DataMarkView dataMarkView = new DataMarkView(mContext, 0, "");
+        DataMarkView dataMarkView = new DataMarkView(mContext, new DataMarkView.IDataValueFormat() {
+            @Override
+            public String format(Entry e, Highlight highlight) {
+                return e.getY() + "元";
+            }
+        });
         BarChart barChart = (BarChart) holder.chart;
-        barChart.setMarkerView(dataMarkView);
+        barChart.setMarker(dataMarkView);
         barChart.setDescription(null);
         barChart.setNoDataText("无数据");
-        barChart.getLegend().setPosition(Legend.LegendPosition.ABOVE_CHART_CENTER);
+        barChart.getLegend().setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
+        barChart.getLegend().setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
         if (!xDesc.equals("") || !yDesc.equals("")) {
             barChart.setXYDesc(xDesc, yDesc, 10f, mContext.getResources().getColor(R.color.normal_black_color));
         }
@@ -95,11 +107,13 @@ public class BarChartItem extends BaseChartItem {
         barChart.setPinchZoom(true);
 //        barChart.setGridBackgroundColor(getResources().getColor(R.color.colorTxt3)); // 表格的的颜色
         XAxis xAxis = barChart.getXAxis();
-        xAxis.setPosition(XAxisPosition.BOTTOM); //定制X轴是在图表上方还是下方。
+        //定制X轴是在图表上方还是下方.
+        xAxis.setPosition(XAxisPosition.BOTTOM);
         xAxis.setDrawGridLines(false);
         xAxis.setValueFormatter(mIAxisValueFormatter);
-        xAxis.setGranularity(1);//放大的时候X值不增多
-        xAxis.setAxisMinimum(0);
+        //放大的时候X值不增多
+        xAxis.setGranularity(1);
+
         YAxis yAxisRight = barChart.getAxisRight();
         yAxisRight.setEnabled(false);
         YAxis yAxisLeft = barChart.getAxisLeft();
@@ -107,6 +121,10 @@ public class BarChartItem extends BaseChartItem {
         //图标提示信息显示位置，显示方式
         //setData
         barChart.setData((BarData) mChartData);
+        barChart.getBarData().setBarWidth(0.2f);
+        if (type == Builder.TYPE_MUTI) {
+            barChart.groupBars(-0.5f, 0.31f, 0.03f);
+        }
         barChart.animateX(1400, Easing.EasingOption.EaseInOutQuad);//动画
         return convertView;
     }
@@ -124,11 +142,19 @@ public class BarChartItem extends BaseChartItem {
         private List<List<ChartValue>> charValueLists = new ArrayList<>();
         private Context context;
         private int type = 1;
+
+
+        private String[] stackLabels = new String[]{};
         private ArrayList<String> labels = new ArrayList<>();
 
         public Builder(Context context, int type) {
             this.context = context;
             this.type = type;
+        }
+
+        public Builder setStackLabels(String[] stackLabels) {
+            this.stackLabels = stackLabels;
+            return this;
         }
 
         public Builder setChartValueList(List<ChartValue> charValueList) {
@@ -138,6 +164,11 @@ public class BarChartItem extends BaseChartItem {
 
         public Builder addChartValueList(List<ChartValue> charValueList) {
             this.charValueLists.add(charValueList);
+            return this;
+        }
+
+        public Builder setCharValueLists(List<List<ChartValue>> charValueLists) {
+            this.charValueLists = charValueLists;
             return this;
         }
 
@@ -188,7 +219,7 @@ public class BarChartItem extends BaseChartItem {
                     return labels.get((int) value % labels.size());
                 }
             };
-            BarChartItem barChartItem = new BarChartItem(chartData, context, iAxisValueFormatter);
+            BarChartItem barChartItem = new BarChartItem(chartData, context, iAxisValueFormatter, type);
             barChartItem.setxDesc(xDesc);
             barChartItem.setyDesc(yDesc);
             return barChartItem;
@@ -223,7 +254,7 @@ public class BarChartItem extends BaseChartItem {
             for (int listIndexOutside = 0; listIndexOutside < charValueLists.size(); listIndexOutside++) {
                 ArrayList<BarEntry> entries = new ArrayList<BarEntry>();
                 for (int listIndexInside = 0; listIndexInside < charValueLists.get(listIndexOutside).size(); listIndexInside++) {
-                    entries.add(new BarEntry((Float) charValueLists.get(listIndexOutside).get(listIndexInside).yVal, listIndexInside));
+                    entries.add(new BarEntry(listIndexInside, (Float) charValueLists.get(listIndexOutside).get(listIndexInside).yVal));
                     if (listIndexOutside == 0) {
                         labels.add(charValueLists.get(listIndexOutside).get(listIndexInside).xVal);
                     }
@@ -235,10 +266,12 @@ public class BarChartItem extends BaseChartItem {
             return cd;
         }
 
-        private IBarDataSet generateBarDataSet(ArrayList<BarEntry> entries, String describle, int color) {
+        private BarDataSet generateBarDataSet(ArrayList<BarEntry> entries, String describle, int color) {
             BarDataSet dataSet = new BarDataSet(entries, describle);
             // set1.setColors(ColorTemplate.createColors(getApplicationContext(),
             // ColorTemplate.FRESH_COLORS));
+
+
             dataSet.setColor(color);
             dataSet.setValueTextSize(11f);
             dataSet.setHighLightColor(context.getResources().getColor(R.color.bar_4CFFFFFF));
@@ -246,7 +279,7 @@ public class BarChartItem extends BaseChartItem {
         }
 
         /**
-         * stakBar
+         * stackBar
          */
         private ChartData stackDataGenerate() {
             ArrayList<BarEntry> entries = new ArrayList<BarEntry>();
@@ -256,10 +289,10 @@ public class BarChartItem extends BaseChartItem {
                 labels.add(charValueList.get(i).xVal);
             }
             BarDataSet d = new BarDataSet(entries, describles[0]);
+            d.setStackLabels(stackLabels);
             d.setHighLightAlpha(20);
             d.setValueTextSize(11f);
-            d.setColors(colors);
-            d.setHighLightAlpha(20);
+            d.setColors(Arrays.copyOf(colors, 3));
             d.setValueTextColor(context.getResources().getColor(R.color.normal_black_color));
             BarData barData = new BarData(d);
             return barData;

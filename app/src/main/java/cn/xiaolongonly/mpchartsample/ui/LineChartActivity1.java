@@ -3,6 +3,8 @@ package cn.xiaolongonly.mpchartsample.ui;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
@@ -13,6 +15,7 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
 import java.util.ArrayList;
@@ -35,14 +38,21 @@ public class LineChartActivity1 extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.list_item_linechart);
+        setContentView(R.layout.activity_test);
         initView();
     }
 
     protected void initView() {
         chart = (LineChart) findViewById(R.id.chart);
 
-        ChartConfig();
+        ((TextView) findViewById(R.id.tvTitle)).setText("线性图1");
+        findViewById(R.id.title_left).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        chartConfig();
         //XY轴配置
         XAxis xAxis = chart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM); //定制X轴是在图表上方还是下方。
@@ -64,20 +74,26 @@ public class LineChartActivity1 extends AppCompatActivity {
     }
 
     /**
-     * 图表的配置 一些提示和Legend
+     * 图表的配置 一些提示和Legendthis
      */
-    private void ChartConfig() {
+    private void chartConfig() {
 
         //设置覆盖物
-        DataMarkView dataMarkView = new DataMarkView(this, 0, "");//自定义覆盖物
-        chart.setMarkerView(dataMarkView);
+
+        chart.setMarker(new DataMarkView(this, new DataMarkView.IDataValueFormat() {
+            @Override
+            public String format(Entry e, Highlight highlight) {
+                return (int) e.getY() + "元";
+            }
+        }));
 
         //背景设置
         chart.setDrawGridBackground(false);//表格背景绘制
         chart.setBackgroundColor(getResources().getColor(R.color.chart_bg));
 
         //Legend定制
-        chart.getLegend().setPosition(Legend.LegendPosition.ABOVE_CHART_LEFT);
+        chart.getLegend().setHorizontalAlignment(Legend.LegendHorizontalAlignment.LEFT);
+        chart.getLegend().setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
         chart.getLegend().setForm(Legend.LegendForm.CIRCLE);//Legend样式
 
         //图表描述

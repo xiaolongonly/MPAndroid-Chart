@@ -36,7 +36,6 @@ public class BarChartActivity extends BaseTitleActivity {
                 .setyDesc("单位(万)").setDescribles(new String[]{"项目支出金额"})
                 .setChartValueList(chartValues)
                 .build();
-        lineChartItem.getView().setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         rlContent.addView(lineChartItem.getView());
     }
 

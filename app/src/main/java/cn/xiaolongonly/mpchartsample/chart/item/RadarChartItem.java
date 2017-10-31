@@ -10,10 +10,12 @@ import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.ChartData;
+import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.RadarData;
 import com.github.mikephil.charting.data.RadarDataSet;
 import com.github.mikephil.charting.data.RadarEntry;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.github.mikephil.charting.highlight.Highlight;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,8 +77,13 @@ public class RadarChartItem extends BaseChartItem {
         mRadarChart.setWebAlpha(100);
         mRadarChart.setDrawWeb(true);
         mRadarChart.getLegend().setEnabled(false);
-        DataMarkView dataMarkView = new DataMarkView(mContext, 2, "");
-        mRadarChart.setMarkerView(dataMarkView);
+        DataMarkView dataMarkView = new DataMarkView(mContext, new DataMarkView.IDataValueFormat() {
+            @Override
+            public String format(Entry e, Highlight highlight) {
+                return (int) e.getY() + "元";
+            }
+        });
+        mRadarChart.setMarker(dataMarkView);
 
         XAxis xAxis = mRadarChart.getXAxis();
         xAxis.setTextSize(9f);

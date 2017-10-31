@@ -12,10 +12,12 @@ import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.data.ChartData;
+import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.github.mikephil.charting.highlight.Highlight;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -84,8 +86,13 @@ public class PieChartItem extends BaseChartItem {
         pieDataSetConfig((PieDataSet) ((PieData) mChartData).getDataSet());
         mPieChart.setExtraLeftOffset(25f);//左边距
         mPieChart.setExtraRightOffset(25f);//右边距
-        DataMarkView dataMarkView = new DataMarkView(mContext, 2, "");
-        mPieChart.setMarkerView(dataMarkView);
+        DataMarkView dataMarkView = new DataMarkView(mContext, new DataMarkView.IDataValueFormat() {
+            @Override
+            public String format(Entry e, Highlight highlight) {
+                return (int) e.getY() + "元";
+            }
+        });
+        mPieChart.setMarker(dataMarkView);
 //        mPieChart.setData((PieData)mChartData.chartData);
 
         mPieChart.setRotationAngle(0);//旋转角度
@@ -103,8 +110,8 @@ public class PieChartItem extends BaseChartItem {
             mPieChart.setDrawHoleEnabled(false);//中心圆
         }
         Legend l = mPieChart.getLegend();
-        mPieChart.setDrawSliceText(false);
-        l.setPosition(Legend.LegendPosition.RIGHT_OF_CHART);
+        mPieChart.setDrawEntryLabels(false);
+        l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.RIGHT);
         l.setEnabled(true);
         l.setXEntrySpace(10f);
         l.setYEntrySpace(7f);

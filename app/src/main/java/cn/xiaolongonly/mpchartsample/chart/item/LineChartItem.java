@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
@@ -16,6 +17,7 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
 import java.util.ArrayList;
@@ -76,6 +78,7 @@ public class LineChartItem extends BaseChartItem {
 
             convertView = LayoutInflater.from(mContext).inflate(
                     R.layout.list_item_linechart, null);
+            convertView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             holder.chart = (LineChart) convertView.findViewById(R.id.chart);
 
             convertView.setTag(holder);
@@ -88,7 +91,9 @@ public class LineChartItem extends BaseChartItem {
 
         LineChart lineChart = (LineChart) holder.chart;
         lineChart.setBackgroundColor(mContext.getResources().getColor(R.color.chart_bg));
-        lineChart.getLegend().setPosition(Legend.LegendPosition.ABOVE_CHART_LEFT);
+//        lineChart.getLegend().setPosition(Legend.LegendPosition.ABOVE_CHART_LEFT);
+        lineChart.getLegend().setHorizontalAlignment(Legend.LegendHorizontalAlignment.LEFT);
+        lineChart.getLegend().setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
         lineChart.getLegend().setForm(Legend.LegendForm.CIRCLE);
         // 设置无数据文本提示
         lineChart.setDescription(null);
@@ -99,13 +104,20 @@ public class LineChartItem extends BaseChartItem {
         }
         //设置单方向和双方向缩放 true x,y方向可以同时控制，false只能控制x方向的缩小放大或者Y方向的缩小放大
         lineChart.setPinchZoom(true);
-        DataMarkView dataMarkView = new DataMarkView(mContext, 0, "");
-        lineChart.setMarkerView(dataMarkView);
+        DataMarkView dataMarkView = new DataMarkView(mContext, new DataMarkView.IDataValueFormat() {
+            @Override
+            public String format(Entry e, Highlight highlight) {
+                return (int) e.getY() + "元";
+            }
+        });
+        lineChart.setMarker(dataMarkView);
         lineChart.setDrawGridBackground(false);
         XAxis xAxis = lineChart.getXAxis();
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM); //定制X轴是在图表上方还是下方。
+        //定制X轴是在图表上方还是下方。
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setDrawGridLines(false);
-        xAxis.setGranularity(1);//放大的时候X值不增多
+        //放大的时候X值不增多
+        xAxis.setGranularity(1);
         xAxis.setValueFormatter(mIAxisValueFormatter);
         if (dataMarkView != null) {
             lineChart.setMarkerView(dataMarkView);

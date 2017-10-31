@@ -15,7 +15,9 @@ import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.ChartData;
+import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.github.mikephil.charting.highlight.Highlight;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -94,7 +96,12 @@ public class HorizontalBarChartItem extends BaseChartItem {
         mHorizontalBarChart.setDescription(description); //设置图表描述
         mHorizontalBarChart.setNoDataText("无数据");//空数据
         mHorizontalBarChart.setGridBackgroundColor(mContext.getResources().getColor(R.color.white)); // 表格的的颜色
-        mHorizontalBarChart.setMarker(new DataMarkView(mContext, 0, ""));
+        mHorizontalBarChart.setMarker(new DataMarkView(mContext, new DataMarkView.IDataValueFormat() {
+            @Override
+            public String format(Entry e, Highlight highlight) {
+                return (int) e.getY() + "元";
+            }
+        }));
         XAxis xAxis = mHorizontalBarChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM); //定制X轴是在图表上方还是下方。
         xAxis.setAvoidFirstLastClipping(false);//定制X轴起点和终点Label不能超出屏幕。

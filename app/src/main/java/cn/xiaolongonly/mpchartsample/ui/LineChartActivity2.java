@@ -1,11 +1,14 @@
 package cn.xiaolongonly.mpchartsample.ui;
 
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import cn.xiaolongonly.mpchartsample.R;
+import cn.xiaolongonly.mpchartsample.base.BaseActivity;
 import cn.xiaolongonly.mpchartsample.base.BaseTitleActivity;
 import cn.xiaolongonly.mpchartsample.bean.ChartValue;
 import cn.xiaolongonly.mpchartsample.chart.item.LineChartItem;
@@ -36,7 +39,7 @@ public class LineChartActivity2 extends BaseTitleActivity {
         chartValues2.add(new ChartValue("10月", 133f));
         chartValues2.add(new ChartValue("9月", 122f));
         LineChartItem lineChartItem = new LineChartItem.Builder(this).setxDesc("单位(月)")
-                .setyDesc("单位(万)").setDescribles(new String[]{"项目支出金额","项目回报金额"})
+                .setyDesc("单位(万)").setDescribles(new String[]{"项目支出金额", "项目回报金额"})
                 .addChartValueList(chartValues).addChartValueList(chartValues2)
                 .build();
         rlContent.addView(lineChartItem.getView());
